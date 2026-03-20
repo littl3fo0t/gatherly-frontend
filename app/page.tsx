@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 
 export default function Home() {
@@ -33,6 +34,12 @@ export default function Home() {
             </a>{" "}
             center.
           </p>
+          <Link
+            href="/signup"
+            className="inline-flex h-12 items-center justify-center rounded-full bg-foreground px-6 text-background transition-colors hover:bg-[#383838] dark:bg-zinc-50 dark:text-black dark:hover:bg-zinc-200"
+          >
+            Sign up
+          </Link>
         </div>
         <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
           <a
