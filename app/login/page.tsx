@@ -2,14 +2,17 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { LogIn } from "lucide-react"
 
 import { setGatherlyAccessTokenCookie } from "@/lib/access-token-cookie"
+import { formatAuthErrorMessage } from "@/lib/auth-error-message"
 import { createClient } from "@/lib/client"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
@@ -21,6 +24,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 export default function LoginPage() {
+  const router = useRouter()
   const supabase = React.useMemo(() => createClient(), [])
 
   const {
@@ -36,11 +40,9 @@ export default function LoginPage() {
   })
 
   const [generalError, setGeneralError] = React.useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = React.useState<string | null>(null)
 
   const onSubmit = handleSubmit(async (values) => {
     setGeneralError(null)
-    setSuccessMessage(null)
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: values.email,
@@ -48,21 +50,22 @@ export default function LoginPage() {
     })
 
     if (error) {
-      setGeneralError(error.message)
+      setGeneralError(formatAuthErrorMessage(error))
       return
     }
 
     const token = data.session?.access_token
     if (!token) {
-      // Unexpected for sign-in, but we handle it safely.
-      setGeneralError("Login succeeded but no access token was returned.")
+      setGeneralError(
+        process.env.NODE_ENV === "production"
+          ? "An unexpected error has occurred, please try again later."
+          : "Error (no_token): Login succeeded but no access token was returned.",
+      )
       return
     }
 
     setGatherlyAccessTokenCookie(token)
-    // Intentional: copy JWT for testing the separate backend API (Bearer token).
-    console.log("Supabase access_token:", token)
-    setSuccessMessage("Signed in successfully. Your session token is stored for API requests.")
+    router.replace("/dashboard")
   })
 
   return (
@@ -97,11 +100,9 @@ export default function LoginPage() {
             </div>
 
             {generalError ? <p className="text-sm text-red-600">{generalError}</p> : null}
-            {successMessage ? (
-              <p className="text-sm text-foreground/80">{successMessage}</p>
-            ) : null}
 
             <Button type="submit" disabled={isSubmitting}>
+              <LogIn data-icon="inline-start" className="size-4" aria-hidden />
               {isSubmitting ? "Signing in..." : "Login"}
             </Button>
           </form>
@@ -117,4 +118,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
