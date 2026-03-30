@@ -103,7 +103,7 @@ export default function LoginPage() {
 
             <Button type="submit" disabled={isSubmitting}>
               <LogIn data-icon="inline-start" className="size-4" aria-hidden />
-              {isSubmitting ? "Signing in..." : "Login"}
+              {isSubmitting ? "Logging you in…" : "Login"}
             </Button>
           </form>
 
