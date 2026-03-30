@@ -10,3 +10,10 @@ export function setGatherlyAccessTokenCookie(token: string) {
     secure ? "; Secure" : ""
   }`
 }
+
+/** Clears the readable API token cookie (e.g. after sign-out). */
+export function clearGatherlyAccessTokenCookie() {
+  if (typeof window === "undefined") return
+  document.cookie =
+    "gatherly_access_token=; path=/; max-age=0; SameSite=Lax"
+}
