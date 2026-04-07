@@ -67,7 +67,10 @@ export default function SignupPage() {
     setGeneralError(null)
     setInfo(null)
 
-    const emailRedirectTo = `${window.location.origin}/auth/confirmation`
+    const appUrl =
+      (process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/+$/, "") ||
+        window.location.origin) as string
+    const emailRedirectTo = `${appUrl}/auth/confirmation`
 
     const { data, error } = await supabase.auth.signUp({
       email: values.email,
