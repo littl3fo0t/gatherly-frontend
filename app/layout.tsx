@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 
+import { QueryProvider } from "@/components/query-provider"
+
 import "./globals.css"
 
 const inter = Inter({
@@ -20,7 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col text-base leading-normal">{children}</body>
+      <body className="min-h-full flex flex-col text-base leading-normal">
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   )
 }

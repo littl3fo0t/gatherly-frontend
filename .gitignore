@@ -46,3 +46,7 @@ next-env.d.ts
 
 # references
 references
+
+# local-only requirements docs (kept in separate repo)
+docs/api_endpoints.md
+docs/database_schema.md
