@@ -1,72 +1,130 @@
-import Link from "next/link";
-import Image from "next/image";
+import Link from "next/link"
+import {
+  CalendarPlus,
+  Compass,
+  LogIn,
+  Search,
+  Ticket,
+  UserPlus,
+} from "lucide-react"
+
+import { HomePublicEvents } from "@/components/home/home-public-events"
+import { AppShell } from "@/components/app-shell"
+import { Button } from "@/components/ui/button"
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <AppShell>
+      <div className="flex flex-col gap-16 pb-4">
+        <section className="flex flex-col gap-6" aria-labelledby="home-hero-heading">
+          <div className="max-w-2xl space-y-4">
+            <h1
+              id="home-hero-heading"
+              className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-          <Link
-            href="/signup"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-foreground px-6 text-background transition-colors hover:bg-[#383838] dark:bg-zinc-50 dark:text-black dark:hover:bg-zinc-200"
-          >
-            Sign up
-          </Link>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+              Discover community events across Canada
+            </h1>
+            <p className="text-lg leading-relaxed text-muted-foreground">
+              Gatherly is a minimalist event board: browse what is happening near you, save your
+              spot, or host something for your community. No clutter—just clear listings and
+              straightforward actions.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            <Button variant="default" size="lg" asChild>
+              <Link href="/signup">
+                <UserPlus data-icon="inline-start" className="size-4" aria-hidden />
+                Sign up
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <Link href="/login">
+                <LogIn data-icon="inline-start" className="size-4" aria-hidden />
+                Log in
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <Link href="#events">
+                <Search data-icon="inline-start" className="size-4" aria-hidden />
+                Browse events
+              </Link>
+            </Button>
+          </div>
+        </section>
+
+        <section className="space-y-6" aria-labelledby="how-it-works-heading">
+          <div className="max-w-2xl space-y-2">
+            <h2 id="how-it-works-heading" className="text-2xl font-semibold tracking-tight">
+              How it works
+            </h2>
+            <p className="text-base leading-relaxed text-muted-foreground">
+              Three steps from browsing to hosting.
+            </p>
+          </div>
+          <ul className="grid gap-4 sm:grid-cols-3">
+            <li>
+              <Card className="h-full">
+                <CardHeader>
+                  <div className="mb-2 flex size-10 items-center justify-center rounded-lg border border-border bg-muted/40">
+                    <Compass className="size-5 text-foreground" aria-hidden />
+                  </div>
+                  <CardTitle className="text-base">Discover</CardTitle>
+                  <CardDescription className="text-base leading-relaxed">
+                    Explore active listings—filtering and richer discovery will layer in as the
+                    product grows.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </li>
+            <li>
+              <Card className="h-full">
+                <CardHeader>
+                  <div className="mb-2 flex size-10 items-center justify-center rounded-lg border border-border bg-muted/40">
+                    <Ticket className="size-5 text-foreground" aria-hidden />
+                  </div>
+                  <CardTitle className="text-base">RSVP</CardTitle>
+                  <CardDescription className="text-base leading-relaxed">
+                    Sign in, claim your seat before capacity fills, and keep track of what you are
+                    attending.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </li>
+            <li>
+              <Card className="h-full">
+                <CardHeader>
+                  <div className="mb-2 flex size-10 items-center justify-center rounded-lg border border-border bg-muted/40">
+                    <CalendarPlus className="size-5 text-foreground" aria-hidden />
+                  </div>
+                  <CardTitle className="text-base">Host</CardTitle>
+                  <CardDescription className="text-base leading-relaxed">
+                    Create in-person, virtual, or hybrid events with clear admission and location
+                    rules—managed from your dashboard.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </li>
+          </ul>
+        </section>
+
+        <section
+          id="events"
+          className="scroll-mt-24 space-y-4 rounded-xl border border-border bg-muted/20 p-6 ring-1 ring-foreground/5"
+          aria-labelledby="events-heading"
+        >
+          <div className="space-y-1">
+            <h2 id="events-heading" className="text-xl font-semibold tracking-tight">
+              Events
+            </h2>
+            <p className="text-base leading-relaxed text-muted-foreground">
+              Active public listings from the community. Sign in from the header to RSVP or host
+              your own.
+            </p>
+          </div>
+          <HomePublicEvents />
+        </section>
+      </div>
+    </AppShell>
+  )
 }
