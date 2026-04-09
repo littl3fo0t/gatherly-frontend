@@ -1,9 +1,46 @@
+import type { Metadata } from "next"
+import { headers } from "next/headers"
 import { Suspense } from "react"
 
 import { HomePublicEvents, HomePublicEventsSkeleton } from "@/components/home/home-public-events"
 import { LandingHeroCtas } from "@/components/home/landing-hero-ctas"
 import { LandingMarketingGate } from "@/components/home/landing-marketing-gate"
 import { AppShell } from "@/components/app-shell"
+
+async function getRequestOriginAsync(): Promise<string | null> {
+  const h = await headers()
+  const host = h.get("x-forwarded-host") ?? h.get("host")
+  if (!host) return null
+  const proto = h.get("x-forwarded-proto") ?? "https"
+  return `${proto}://${host}`
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const envBase = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/+$/, "")
+  const origin = envBase || (await getRequestOriginAsync())
+  const canonical = origin ? new URL("/", origin).toString() : "/"
+
+  const title = "Community events across Canada"
+  const description =
+    "Gatherly is a minimalist event board: browse what is happening near you, RSVP in seconds, or host something for your community."
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      title,
+      description,
+      url: "/",
+    },
+    twitter: {
+      title,
+      description,
+    },
+  }
+}
 
 export default function Home() {
   return (
