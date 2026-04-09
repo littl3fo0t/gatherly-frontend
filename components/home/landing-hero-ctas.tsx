@@ -4,6 +4,8 @@
  * Landing hero call-to-actions driven by Supabase session (mirrors AppHeader auth wiring).
  * Unauthenticated: signup, login, browse. Authenticated: create event / dashboard / browse.
  * Profile and logout stay in the header only.
+ *
+ * Uses `useAuthState()` so other landing elements can share the same auth-derived UI state.
  */
 import * as React from "react"
 import Link from "next/link"
@@ -15,28 +17,12 @@ import {
   UserPlus,
 } from "lucide-react"
 
-import { createClient } from "@/lib/client"
+import { useAuthState } from "@/components/home/use-auth-state"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 
-type AuthState = "loading" | "out" | "in"
-
 export function LandingHeroCtas() {
-  const supabase = React.useMemo(() => createClient(), [])
-  const [auth, setAuth] = React.useState<AuthState>("loading")
-
-  React.useEffect(() => {
-    // Initial session + live updates (e.g. login in another tab). No cookie/query cleanup here — AppHeader handles SIGNED_OUT.
-    supabase.auth.getSession().then(({ data }) => {
-      setAuth(data.session?.user ? "in" : "out")
-    })
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setAuth(session?.user ? "in" : "out")
-    })
-    return () => {
-      sub.subscription.unsubscribe()
-    }
-  }, [supabase])
+  const auth = useAuthState()
 
   // Avoid layout shift while the first getSession resolves.
   if (auth === "loading") {
