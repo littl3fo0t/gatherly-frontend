@@ -65,7 +65,7 @@ export default function LoginPage() {
     }
 
     setGatherlyAccessTokenCookie(token)
-    router.replace("/dashboard")
+    router.replace("/")
   })
 
   return (

@@ -30,7 +30,7 @@ function AuthConfirmationContent() {
       if (cancelled) return
       if (existing?.access_token) {
         setGatherlyAccessTokenCookie(existing.access_token)
-        router.replace("/dashboard")
+        router.replace("/")
         return
       }
 
@@ -57,7 +57,7 @@ function AuthConfirmationContent() {
         if (session?.access_token) {
           setGatherlyAccessTokenCookie(session.access_token)
         }
-        router.replace("/dashboard")
+        router.replace("/")
         return
       }
 
@@ -80,7 +80,7 @@ function AuthConfirmationContent() {
         if (session?.access_token) {
           setGatherlyAccessTokenCookie(session.access_token)
         }
-        router.replace("/dashboard")
+        router.replace("/")
         return
       }
 
@@ -101,7 +101,7 @@ function AuthConfirmationContent() {
           }
           setGatherlyAccessTokenCookie(access_token)
           window.history.replaceState(null, "", window.location.pathname + window.location.search)
-          router.replace("/dashboard")
+          router.replace("/")
           return
         }
       }

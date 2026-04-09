@@ -103,7 +103,7 @@ export default function SignupPage() {
     }
 
     setGatherlyAccessTokenCookie(token)
-    router.replace("/dashboard")
+    router.replace("/")
   })
 
   return (

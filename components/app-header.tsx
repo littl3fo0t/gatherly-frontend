@@ -53,11 +53,8 @@ export function AppHeader() {
   return (
     <header className="w-full">
       <div className="mx-auto flex w-full max-w-[1200px] items-center justify-between px-4 py-4">
-        {/*
-          Wordmark: layout spec points to “home” as dashboard; the marketing landing lives at /.
-          If / replaces /dashboard later, switch href to "/" (or role-based home).
-        */}
-        <Link href="/dashboard" className="text-base font-bold tracking-tight text-foreground">
+        {/* Wordmark: primary app home is the public landing at /. */}
+        <Link href="/" className="text-base font-bold tracking-tight text-foreground">
           Gatherly
         </Link>
         <div className="flex items-center gap-2">
