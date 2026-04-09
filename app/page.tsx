@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import Link from "next/link"
 import {
   CalendarPlus,
@@ -8,7 +9,7 @@ import {
   UserPlus,
 } from "lucide-react"
 
-import { HomePublicEvents } from "@/components/home/home-public-events"
+import { HomePublicEvents, HomePublicEventsSkeleton } from "@/components/home/home-public-events"
 import { AppShell } from "@/components/app-shell"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -23,7 +24,7 @@ export default function Home() {
               id="home-hero-heading"
               className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
             >
-              Discover community events across Canada
+              Discover community events across Canada 🍁
             </h1>
             <p className="text-lg leading-relaxed text-muted-foreground">
               Gatherly is a minimalist event board: browse what is happening near you, save your
@@ -122,7 +123,9 @@ export default function Home() {
               your own.
             </p>
           </div>
-          <HomePublicEvents />
+          <Suspense fallback={<HomePublicEventsSkeleton />}>
+            <HomePublicEvents />
+          </Suspense>
         </section>
       </div>
     </AppShell>
