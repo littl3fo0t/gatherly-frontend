@@ -2,7 +2,7 @@
 
 /**
  * Landing hero call-to-actions driven by Supabase session (mirrors AppHeader auth wiring).
- * Unauthenticated: signup, login, browse. Authenticated: create event / dashboard / browse.
+ * Unauthenticated: signup, login, browse. Authenticated: create event / browse.
  * Profile and logout stay in the header only.
  *
  * Uses `useAuthState()` so other landing elements can share the same auth-derived UI state.
@@ -11,7 +11,6 @@ import * as React from "react"
 import Link from "next/link"
 import {
   CalendarPlus,
-  LayoutDashboard,
   LogIn,
   Search,
   UserPlus,
@@ -24,7 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export function LandingHeroCtas() {
   const auth = useAuthState()
 
-  // Avoid layout shift while the first getSession resolves.
+  // Provide stable button layout while auth state resolves.
   if (auth === "loading") {
     return (
       <div
@@ -32,7 +31,6 @@ export function LandingHeroCtas() {
         aria-busy="true"
         aria-label="Loading actions"
       >
-        <Skeleton className="h-9 w-36 rounded-lg" />
         <Skeleton className="h-9 w-36 rounded-lg" />
         <Skeleton className="h-9 w-40 rounded-lg" />
       </div>
@@ -72,12 +70,6 @@ export function LandingHeroCtas() {
         <Link href="/dashboard">
           <CalendarPlus data-icon="inline-start" className="size-4" aria-hidden />
           Create event
-        </Link>
-      </Button>
-      <Button variant="outline" size="lg" asChild>
-        <Link href="/dashboard">
-          <LayoutDashboard data-icon="inline-start" className="size-4" aria-hidden />
-          Dashboard
         </Link>
       </Button>
       <Button variant="outline" size="lg" asChild>
