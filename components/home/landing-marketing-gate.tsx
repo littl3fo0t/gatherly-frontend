@@ -11,11 +11,27 @@ import { useAuthState } from "@/components/home/use-auth-state"
 export function LandingMarketingGate() {
   const auth = useAuthState()
 
-  if (auth !== "out") {
+  if (auth === "loading") {
     return (
       <h1 id="home-hero-heading" className="sr-only">
         Discover community events across Canada 🍁
       </h1>
+    )
+  }
+
+  if (auth === "in") {
+    return (
+      <div className="max-w-2xl space-y-3">
+        <h1
+          id="home-hero-heading"
+          className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
+        >
+          Dashboard
+        </h1>
+        <p className="text-base leading-relaxed text-muted-foreground">
+          Welcome back. Scroll down to view your events and reservations.
+        </p>
+      </div>
     )
   }
 
