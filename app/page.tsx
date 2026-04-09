@@ -1,17 +1,13 @@
 import { Suspense } from "react"
-import Link from "next/link"
 import {
   CalendarPlus,
   Compass,
-  LogIn,
-  Search,
   Ticket,
-  UserPlus,
 } from "lucide-react"
 
 import { HomePublicEvents, HomePublicEventsSkeleton } from "@/components/home/home-public-events"
+import { LandingHeroCtas } from "@/components/home/landing-hero-ctas"
 import { AppShell } from "@/components/app-shell"
-import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function Home() {
@@ -32,26 +28,7 @@ export default function Home() {
               straightforward actions.
             </p>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            <Button variant="default" size="lg" asChild>
-              <Link href="/signup">
-                <UserPlus data-icon="inline-start" className="size-4" aria-hidden />
-                Sign up
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" asChild>
-              <Link href="/login">
-                <LogIn data-icon="inline-start" className="size-4" aria-hidden />
-                Log in
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" asChild>
-              <Link href="#events">
-                <Search data-icon="inline-start" className="size-4" aria-hidden />
-                Browse events
-              </Link>
-            </Button>
-          </div>
+          <LandingHeroCtas />
         </section>
 
         <section className="space-y-6" aria-labelledby="how-it-works-heading">
