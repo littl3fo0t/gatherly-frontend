@@ -24,11 +24,13 @@ export const publicEventDetailSchema = z.object({
   maxCapacity: z.number(),
   isHot: z.boolean(),
   categories: z.array(z.string()),
+  // API may omit this with no JWT, or send `null` when unauthenticated.
   organizer: z
     .object({
       id: z.string().uuid(),
       fullName: z.string(),
     })
+    .nullable()
     .optional(),
 })
 
