@@ -3,6 +3,7 @@
  * Keeps cache keys consistent for useQuery, prefetchQuery, and invalidateQueries.
  */
 const publicRoot = ["public"] as const
+const profileRoot = ["profile"] as const
 
 export const queryKeys = {
   public: {
@@ -10,5 +11,9 @@ export const queryKeys = {
     events: (page: number, size: number) =>
       [...publicRoot, "events", page, size] as const,
     categories: () => [...publicRoot, "categories"] as const,
+  },
+  profile: {
+    all: profileRoot,
+    me: () => [...profileRoot, "me"] as const,
   },
 } as const

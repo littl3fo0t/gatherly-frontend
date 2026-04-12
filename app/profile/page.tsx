@@ -1,32 +1,18 @@
 "use client"
 
 import * as React from "react"
+import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { Calendar, Crown, ImageUp, Pencil, UserCircle } from "lucide-react"
+import { Calendar, Crown, ImageUp, UserCircle } from "lucide-react"
 
+import { ProfileAddressSection } from "@/components/profile-address-section"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
-
-type ProfileResponse = {
-  id: string
-  fullName: string
-  email: string
-  role: "user" | "moderator" | "admin" | string
-  avatarUrl: string | null
-  addressLine1: string | null
-  addressLine2: string | null
-  city: string | null
-  province: string | null
-  postalCode: string | null
-  createdAt: string
-  updatedAt: string
-}
-
-type Phase = "loading" | "redirecting" | "ready" | "error500"
+import { ApiError } from "@/lib/api/http"
+import { fetchProfileMeBff } from "@/lib/api/profile-me-bff"
+import { queryKeys } from "@/lib/query-keys"
 
 function readCookie(name: string) {
   if (typeof document === "undefined") return null
@@ -34,12 +20,6 @@ function readCookie(name: string) {
   const match = parts.find((p) => p.startsWith(`${name}=`))
   if (!match) return null
   return decodeURIComponent(match.slice(name.length + 1))
-}
-
-function joinUrl(base: string, path: string) {
-  const b = base.replace(/\/+$/, "")
-  const p = path.startsWith("/") ? path : `/${path}`
-  return `${b}${p}`
 }
 
 function formatMemberSince(iso: string) {
@@ -97,81 +77,63 @@ function ProfileSkeleton() {
 
 export default function ProfilePage() {
   const router = useRouter()
-
-  const [phase, setPhase] = React.useState<Phase>("loading")
-  const [profile, setProfile] = React.useState<ProfileResponse | null>(null)
+  const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
-    let cancelled = false
+    setMounted(true)
+  }, [])
 
-    async function run() {
-      const token = readCookie("gatherly_access_token")
-      if (!token) {
-        setPhase("redirecting")
-        router.replace("/login")
-        return
-      }
+  const token = mounted ? readCookie("gatherly_access_token") : null
+  const enabled = mounted && !!token
 
-      const url = "/api/profiles/me"
-      let res: Response
-      try {
-        res = await fetch(url, {
-          method: "GET",
-          cache: "no-store",
-        })
-      } catch (e) {
-        if (cancelled) return
-        setPhase("error500")
-        if (process.env.NODE_ENV === "development") {
-          // eslint-disable-next-line no-console
-          console.log(e)
-        }
-        return
-      }
+  React.useEffect(() => {
+    if (mounted && !token) {
+      router.replace("/login")
+    }
+  }, [mounted, token, router])
 
-      if (cancelled) return
+  const { data: profile, isPending, isError, error } = useQuery({
+    queryKey: queryKeys.profile.me(),
+    queryFn: ({ signal }) => fetchProfileMeBff(signal),
+    enabled,
+    staleTime: 60_000,
+  })
 
-      if (res.status === 401 || res.status === 404) {
-        setPhase("redirecting")
-        router.replace("/login")
-        return
-      }
+  React.useEffect(() => {
+    if (!isError || !(error instanceof ApiError)) return
+    if (error.status === 401 || error.status === 404) {
+      router.replace("/login")
+    }
+  }, [isError, error, router])
 
-      if (res.status === 500) {
-        setPhase("error500")
-        if (process.env.NODE_ENV === "development") {
-          const obj = await res.json().catch(() => null)
-          // eslint-disable-next-line no-console
-          console.log(obj)
-        }
-        return
-      }
+  if (!mounted) {
+    return <ProfileSkeleton />
+  }
 
-      if (!res.ok) {
-        setPhase("error500")
-        if (process.env.NODE_ENV === "development") {
-          const obj = await res.json().catch(() => null)
-          // eslint-disable-next-line no-console
-          console.log(obj)
-        }
-        return
-      }
+  if (!token) {
+    return null
+  }
 
-      const data = (await res.json()) as ProfileResponse
-      setProfile(data)
-      setPhase("ready")
+  if (isError) {
+    if (error instanceof ApiError && (error.status === 401 || error.status === 404)) {
+      return null
     }
 
-    void run()
-
-    return () => {
-      cancelled = true
+    if (process.env.NODE_ENV === "development") {
+      if (error instanceof ApiError && error.bodyText) {
+        try {
+          // eslint-disable-next-line no-console
+          console.log(JSON.parse(error.bodyText))
+        } catch {
+          // eslint-disable-next-line no-console
+          console.log(error.bodyText)
+        }
+      } else {
+        // eslint-disable-next-line no-console
+        console.log(error)
+      }
     }
-  }, [router])
 
-  if (phase === "redirecting") return null
-
-  if (phase === "error500") {
     return (
       <div className="py-10">
         <p className="text-base leading-relaxed text-foreground">
@@ -182,21 +144,13 @@ export default function ProfilePage() {
     )
   }
 
-  if (phase !== "ready" || !profile) {
+  if (isPending || !profile) {
     return <ProfileSkeleton />
   }
 
   const role = (profile.role ?? "").toString()
   const showModerator = role === "moderator"
   const showAdmin = role === "admin"
-
-  const address = {
-    line1: profile.addressLine1 ?? "",
-    line2: profile.addressLine2 ?? "",
-    city: profile.city ?? "",
-    province: profile.province ?? "",
-    postalCode: profile.postalCode ?? "",
-  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -236,42 +190,7 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      <section className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-lg font-semibold tracking-tight text-foreground">Address</h2>
-          <Button type="button" variant="outline" disabled>
-            <Pencil data-icon="inline-start" className="size-4" aria-hidden />
-            Edit
-          </Button>
-        </div>
-
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="addressLine1">Address line 1</Label>
-            <Input id="addressLine1" value={address.line1} placeholder="Not provided" disabled />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="addressLine2">Address line 2</Label>
-            <Input id="addressLine2" value={address.line2} placeholder="Not provided" disabled />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="city">City</Label>
-            <Input id="city" value={address.city} placeholder="Not provided" disabled />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="province">Province</Label>
-            <Input id="province" value={address.province} placeholder="Not provided" disabled />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="postalCode">Postal code</Label>
-            <Input id="postalCode" value={address.postalCode} placeholder="Not provided" disabled />
-          </div>
-        </div>
-      </section>
+      <ProfileAddressSection profile={profile} />
     </div>
   )
 }

@@ -20,7 +20,10 @@ type AuthState = "loading" | "out" | "in"
 
 export function AppHeader() {
   const router = useRouter()
-  /** Same QueryClient as QueryProvider — cleared on logout so no stale user data remains. */
+  /**
+   * Same QueryClient as QueryProvider — cleared on logout so no stale user data remains
+   * (including `queryKeys.profile.me()` and any other cached queries).
+   */
   const queryClient = useQueryClient()
   const supabase = React.useMemo(() => createClient(), [])
   const [auth, setAuth] = React.useState<AuthState>("loading")
