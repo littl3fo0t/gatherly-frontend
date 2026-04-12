@@ -10,6 +10,8 @@ export const queryKeys = {
     all: publicRoot,
     events: (page: number, size: number) =>
       [...publicRoot, "events", page, size] as const,
+    eventDetail: (id: string, authenticated: boolean) =>
+      [...publicRoot, "event", id, authenticated ? "auth" : "anon"] as const,
     categories: () => [...publicRoot, "categories"] as const,
   },
   profile: {
