@@ -9,7 +9,7 @@ export function AppFooter() {
   return (
     <footer className="mt-auto w-full bg-black text-white">
       <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-6 px-4 py-10">
-        <p className="text-center text-base leading-relaxed">Made by Thomas, with love.</p>
+        <p className="text-center text-base leading-relaxed">Made by Thomas, with 💖</p>
         <div className="flex items-center justify-center gap-10">
           <Link
             href={githubHref}

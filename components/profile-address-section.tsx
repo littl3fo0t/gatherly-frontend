@@ -8,11 +8,25 @@ import { MapPin, Pencil, Save, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { ApiError } from "@/lib/api/http"
 import { putProfileMeBff, type PutProfileMeBody } from "@/lib/api/profile-me-bff"
 import { hasProfileAddress } from "@/lib/profile-address"
+import {
+  isProfileProvinceCode,
+  normalizeProfileProvince,
+  PROFILE_PROVINCES,
+} from "@/lib/profile-province"
 import { queryKeys } from "@/lib/query-keys"
 import type { ProfileResponse } from "@/lib/profile-types"
+
+const PROVINCE_SELECT_EMPTY = "__none__"
 
 type Draft = {
   addressLine1: string
@@ -27,7 +41,7 @@ function addressDraftFromProfile(p: ProfileResponse): Draft {
     addressLine1: p.addressLine1 ?? "",
     addressLine2: p.addressLine2 ?? "",
     city: p.city ?? "",
-    province: p.province ?? "",
+    province: normalizeProfileProvince(p.province),
     postalCode: p.postalCode ?? "",
   }
 }
@@ -147,7 +161,7 @@ export function ProfileAddressSection({ profile }: ProfileAddressSectionProps) {
       addressLine1: trimOrNull(draft.addressLine1),
       addressLine2: trimOrNull(draft.addressLine2),
       city: trimOrNull(draft.city),
-      province: trimOrNull(draft.province),
+      province: trimOrNull(normalizeProfileProvince(draft.province)),
       postalCode: trimOrNull(draft.postalCode),
     })
   }
@@ -162,9 +176,13 @@ export function ProfileAddressSection({ profile }: ProfileAddressSectionProps) {
         addressLine1: profile.addressLine1 ?? "",
         addressLine2: profile.addressLine2 ?? "",
         city: profile.city ?? "",
-        province: profile.province ?? "",
+        province: normalizeProfileProvince(profile.province),
         postalCode: profile.postalCode ?? "",
       }
+
+  const rawProvince = normalizeProfileProvince(v.province)
+  const legacyProvince = rawProvince !== "" && !isProfileProvinceCode(rawProvince)
+  const provinceSelectValue = rawProvince === "" ? PROVINCE_SELECT_EMPTY : rawProvince
 
   const showEmpty = !hasAddress && flow !== "add"
 
@@ -250,16 +268,37 @@ export function ProfileAddressSection({ profile }: ProfileAddressSectionProps) {
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor={fieldId("province")}>Province</Label>
-          <Input
-            id={fieldId("province")}
-            value={v.province}
-            onChange={
-              isFormActive ? (e) => setDraft((d) => ({ ...d, province: e.target.value })) : undefined
+          <Label htmlFor={fieldId("province")}>Province or territory</Label>
+          <Select
+            value={provinceSelectValue}
+            onValueChange={
+              isFormActive
+                ? (val) =>
+                    setDraft((d) => ({
+                      ...d,
+                      province: val === PROVINCE_SELECT_EMPTY ? "" : val,
+                    }))
+                : undefined
             }
-            placeholder="Province or state"
             disabled={inputsDisabled}
-          />
+          >
+            <SelectTrigger id={fieldId("province")} className="w-full max-w-full" size="default">
+              <SelectValue placeholder="Select province or territory" />
+            </SelectTrigger>
+            <SelectContent position="popper" className="w-[var(--radix-select-trigger-width)] max-h-72">
+              <SelectItem value={PROVINCE_SELECT_EMPTY}>Not selected</SelectItem>
+              {legacyProvince ? (
+                <SelectItem value={rawProvince}>
+                  {rawProvince} (legacy value)
+                </SelectItem>
+              ) : null}
+              {PROFILE_PROVINCES.map(({ code, label }) => (
+                <SelectItem key={code} value={code}>
+                  {label} ({code})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="grid gap-2">
