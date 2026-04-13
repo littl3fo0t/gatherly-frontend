@@ -1,5 +1,7 @@
 "use client"
 
+import * as React from "react"
+
 /**
  * Landing hero call-to-actions driven by Supabase session (mirrors AppHeader auth wiring).
  * Unauthenticated: signup, login, browse. Authenticated: create event / browse.
@@ -7,7 +9,6 @@
  *
  * Uses `useAuthState()` so other landing elements can share the same auth-derived UI state.
  */
-import * as React from "react"
 import Link from "next/link"
 import {
   CalendarPlus,
@@ -16,12 +17,16 @@ import {
   UserPlus,
 } from "lucide-react"
 
+import { EventUpsertDialog } from "@/components/events/event-upsert-dialog"
 import { useAuthState } from "@/components/home/use-auth-state"
+import { useSupabaseSessionHydration } from "@/hooks/use-supabase-session-hydration"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export function LandingHeroCtas() {
   const auth = useAuthState()
+  const [createOpen, setCreateOpen] = React.useState(false)
+  const { session } = useSupabaseSessionHydration()
 
   // Provide stable button layout while auth state resolves.
   if (auth === "loading") {
@@ -63,14 +68,17 @@ export function LandingHeroCtas() {
     )
   }
 
-  // Signed-in: task CTAs to dashboard until a dedicated /events/new (or modal) exists.
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-      <Button variant="default" size="lg" asChild>
-        <Link href="/dashboard">
-          <CalendarPlus data-icon="inline-start" className="size-4" aria-hidden />
-          Create event
-        </Link>
+      <EventUpsertDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        mode="create"
+        accessToken={session?.access_token ?? null}
+      />
+      <Button variant="default" size="lg" type="button" onClick={() => setCreateOpen(true)}>
+        <CalendarPlus data-icon="inline-start" className="size-4" aria-hidden />
+        Create event
       </Button>
       <Button variant="outline" size="lg" asChild>
         <Link href="#events">

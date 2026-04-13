@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 
+import { AppSonner } from "@/components/app-sonner"
 import { QueryProvider } from "@/components/query-provider"
 
 import "./globals.css"
@@ -44,7 +45,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col text-base leading-normal">
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          {children}
+          <AppSonner />
+        </QueryProvider>
       </body>
     </html>
   )

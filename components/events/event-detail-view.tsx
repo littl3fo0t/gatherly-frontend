@@ -17,6 +17,7 @@ import {
 import { z } from "zod"
 
 import { AppShell } from "@/components/app-shell"
+import { EventUpsertDialog } from "@/components/events/event-upsert-dialog"
 import { OrganizerDetails } from "@/components/events/organizer-details"
 import { SafeEventDescription } from "@/components/events/safe-event-description"
 import {
@@ -100,6 +101,7 @@ export type EventDetailViewProps = {
 }
 
 export function EventDetailView({ eventId }: EventDetailViewProps) {
+  const [editOpen, setEditOpen] = React.useState(false)
   const { hydrated, session } = useSupabaseSessionHydration()
   const authed = Boolean(session?.access_token)
   const idValid = z.string().uuid().safeParse(eventId).success
@@ -117,6 +119,9 @@ export function EventDetailView({ eventId }: EventDetailViewProps) {
   const user = session?.user ?? null
   const appRole = getAppRoleFromUser(user)
   const showFlag = isModeratorOrAdmin(appRole)
+
+  const organizer = data?.organizer ?? null
+  const isOrganizer = Boolean(organizer && user?.id === organizer.id && session)
 
   let body: React.ReactNode
 
@@ -174,9 +179,7 @@ export function EventDetailView({ eventId }: EventDetailViewProps) {
     const showLocation = data.eventType === "in_person" || data.eventType === "hybrid"
     const locationText = data.address ? formatAddressLine(data.address) : null
 
-    const organizer = data.organizer
     const showOrganizer = Boolean(session && organizer)
-    const isOrganizer = Boolean(session && organizer && user?.id === organizer.id)
 
     body = (
       <article className="flex flex-col gap-8">
@@ -204,7 +207,7 @@ export function EventDetailView({ eventId }: EventDetailViewProps) {
           <h1 className="text-2xl font-bold tracking-tight text-foreground sm:flex-1">{data.title}</h1>
           <div className="flex shrink-0 flex-wrap justify-end gap-2 sm:pt-0.5">
             {isOrganizer ? (
-              <Button type="button" variant="outline" size="default" disabled>
+              <Button type="button" variant="outline" size="default" onClick={() => setEditOpen(true)}>
                 <Pencil data-icon="inline-start" className="size-4" aria-hidden />
                 Edit Event
               </Button>
@@ -265,6 +268,19 @@ export function EventDetailView({ eventId }: EventDetailViewProps) {
 
   return (
     <AppShell>
+      {data && isOrganizer ? (
+        <EventUpsertDialog
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          mode="edit"
+          eventId={eventId}
+          initialDetail={data}
+          accessToken={session?.access_token ?? null}
+          onSuccess={() => {
+            void refetch()
+          }}
+        />
+      ) : null}
       <div className="flex flex-col gap-6">
         <Button variant="outline" size="default" className="w-fit" asChild>
           <Link href="/#events">
