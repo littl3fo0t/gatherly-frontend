@@ -20,7 +20,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { getApiErrorMessageForUser } from "@/lib/api/api-error-message"
@@ -158,9 +157,9 @@ export function EventUpsertDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton
-        className="flex max-h-[min(90vh,720px)] max-w-[calc(100%-2rem)] flex-col gap-0 p-0 sm:max-w-xl"
+        className="flex max-h-[min(90vh,720px)] w-full max-w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-xl"
       >
-        <div className="p-4 pb-2">
+        <div className="shrink-0 p-4 pb-2">
           <DialogHeader>
             <DialogTitle>{mode === "create" ? "Create event" : "Edit event"}</DialogTitle>
             <DialogDescription>
@@ -171,7 +170,7 @@ export function EventUpsertDialog({
           </DialogHeader>
         </div>
 
-        <ScrollArea className="min-h-0 flex-1 px-4">
+        <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-4">
           <form id="event-upsert-form" className="grid gap-4 pb-4" onSubmit={onSubmit}>
             {editBlocked ? (
               <p className="text-sm text-muted-foreground" aria-live="polite">
@@ -426,9 +425,9 @@ export function EventUpsertDialog({
               ) : null}
             </div>
           </form>
-        </ScrollArea>
+        </div>
 
-        <DialogFooter className="border-t bg-muted/50">
+        <DialogFooter className="shrink-0 border-t bg-muted/50">
           <Button
             type="button"
             variant="outline"
