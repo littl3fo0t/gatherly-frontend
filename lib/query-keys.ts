@@ -4,6 +4,7 @@
  */
 const publicRoot = ["public"] as const
 const profileRoot = ["profile"] as const
+const organizerRoot = ["organizer"] as const
 
 export const queryKeys = {
   public: {
@@ -17,5 +18,9 @@ export const queryKeys = {
   profile: {
     all: profileRoot,
     me: () => [...profileRoot, "me"] as const,
+  },
+  organizer: {
+    all: organizerRoot,
+    eventRow: (id: string) => [...organizerRoot, "event", id] as const,
   },
 } as const
